@@ -91,6 +91,7 @@ window.addEventListener('load', () => {
       toggleConverter = document.getElementById('toggleConverter'),
       toggleDarkTheme = document.getElementById('toggleDarkTheme'),
       toggleDemandIndex = document.getElementById('toggleDemandIndex'),
+      toggleEditingFeatures = document.getElementById('toggleEditingFeatures'),
       toggleEverlastingCollection = document.getElementById('toggleEverlastingCollection'),
       toggleEverlastingMarket = document.getElementById('toggleEverlastingMarket'),
       toggleFavoriteSellers = document.getElementById('toggleFavoriteSellers'),
@@ -268,6 +269,7 @@ window.addEventListener('load', () => {
   toggleConverter.addEventListener('change', triggerSave);
   toggleDarkTheme.addEventListener('change', darkTheme.useDarkTheme);
   toggleDemandIndex.addEventListener('change', triggerSave);
+  toggleEditingFeatures.addEventListener('change', triggerSave);
   toggleEverlastingCollection.addEventListener('change', triggerSave);
   toggleEverlastingMarket.addEventListener('change', triggerSave);
   toggleFavoriteSellers.addEventListener('change', triggerSave);
@@ -350,6 +352,7 @@ window.addEventListener('load', () => {
       toggleConverter.checked = result.prefs.converter;
       toggleDarkTheme.checked = result.prefs.darkTheme;
       toggleDemandIndex.checked = result.prefs.demandIndex;
+      toggleEditingFeatures.checked = result.prefs.editingFeatures;
       toggleEverlastingCollection.checked = result.prefs.everlastingCollection;
       toggleEverlastingMarket.checked = result.prefs.everlastingMarket;
       toggleFavoriteSellers.checked = result.prefs.favoriteSellers;

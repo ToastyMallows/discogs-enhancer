@@ -14,9 +14,9 @@
  */
 
 let elems = [],
-    filterMonitor,
-    prefs = {},
-    resourceLibrary;
+  filterMonitor,
+  prefs = {},
+  resourceLibrary;
 
 // ========================================================
 // Functions
@@ -62,12 +62,12 @@ function appendFragment(elems) {
  */
 function getCurrentFilterState() {
   let currentFilterState = {
-        everlastingMarket: prefs.everlastingMarket,
-        filterMediaCondition: prefs.filterMediaCondition,
-        filterPrices: prefs.filterPrices,
-        filterShippingCountry: prefs.filterShippingCountry,
-        filterSleeveCondition: prefs.filterSleeveCondition,
-      };
+    everlastingMarket: prefs.everlastingMarket,
+    filterMediaCondition: prefs.filterMediaCondition,
+    filterPrices: prefs.filterPrices,
+    filterShippingCountry: prefs.filterShippingCountry,
+    filterSleeveCondition: prefs.filterSleeveCondition,
+  };
   return currentFilterState;
 }
 
@@ -77,16 +77,16 @@ function getCurrentFilterState() {
 
 if (typeof chrome.runtime.onInstalled !== 'undefined') {
 
-  chrome.runtime.onInstalled.addListener(function(details) {
+  chrome.runtime.onInstalled.addListener(function (details) {
 
     let previousVersion,
-        thisVersion;
+      thisVersion;
 
     if (details.reason === 'install') {
 
       console.log('Welcome to the pleasuredome!');
 
-      chrome.storage.sync.set({ didUpdate: false }, function() {});
+      chrome.storage.sync.set({ didUpdate: false }, function () { });
 
     } else if (details.reason === 'update') {
 
@@ -95,14 +95,14 @@ if (typeof chrome.runtime.onInstalled !== 'undefined') {
 
       thisVersion = chrome.runtime.getManifest().version.split('.');
 
-      if ( Number(thisVersion[0]) > Number(previousVersion[0]) ||
-           Number(thisVersion[1]) > Number(previousVersion[1]) ) {
+      if (Number(thisVersion[0]) > Number(previousVersion[0]) ||
+        Number(thisVersion[1]) > Number(previousVersion[1])) {
 
-        chrome.browserAction.setBadgeText({text: ' '});
+        chrome.browserAction.setBadgeText({ text: ' ' });
 
-        chrome.browserAction.setBadgeBackgroundColor({color: '#4cb749'});
+        chrome.browserAction.setBadgeBackgroundColor({ color: '#4cb749' });
 
-        chrome.storage.sync.set({didUpdate: true}, function() {});
+        chrome.storage.sync.set({ didUpdate: true }, function () { });
       }
     }
   });
@@ -137,6 +137,7 @@ appendFragment([resourceLibrary]).then(() => {
         converter: true,
         darkTheme: false,
         demandIndex: false,
+        editingFeatures: false,
         everlastingCollection: false,
         everlastingMarket: true,
         favoriteSellers: true,
@@ -198,11 +199,11 @@ appendFragment([resourceLibrary]).then(() => {
     }
 
     // Dark Theme
-    if ( result.prefs.darkTheme ) document.documentElement.classList.add('de-dark-theme');
+    if (result.prefs.darkTheme) document.documentElement.classList.add('de-dark-theme');
     // Don't use the dark theme on subdomains
     // Fixed in this file instead of manifest.json due to issues explained here:
     // https://github.com/salcido/discogs-enhancer/issues/14
-    if ( !window.location.href.includes('www') ) {
+    if (!window.location.href.includes('www')) {
       document.documentElement.classList.remove('de-dark-theme');
     }
 
@@ -253,7 +254,7 @@ appendFragment([resourceLibrary]).then(() => {
       baoi_css.type = 'text/css';
       baoi_css.href = chrome.extension.getURL('css/baoi-fields.css');
       baoi_css.id = 'baoiFieldsCss',
-      baoi_css.disabled = !result.prefs.baoiFields;
+        baoi_css.disabled = !result.prefs.baoiFields;
 
       elems.push(baoi_css);
 
@@ -264,7 +265,7 @@ appendFragment([resourceLibrary]).then(() => {
       ytPlaylists_css.type = 'text/css';
       ytPlaylists_css.href = chrome.extension.getURL('css/large-youtube-playlists.css');
       ytPlaylists_css.id = 'ytPlaylistsCss',
-      ytPlaylists_css.disabled = !result.prefs.ytPlaylists;
+        ytPlaylists_css.disabled = !result.prefs.ytPlaylists;
 
       elems.push(ytPlaylists_css);
 
@@ -311,7 +312,7 @@ appendFragment([resourceLibrary]).then(() => {
       // Preference-dependent scripts
       // ========================================================
 
-      if ( result.prefs.absoluteDate ) {
+      if (result.prefs.absoluteDate) {
         // show-actual-dates.js
         let absoluteDate = document.createElement('script');
 
@@ -322,7 +323,7 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(absoluteDate);
       }
 
-      if ( result.prefs.averagePrice ) {
+      if (result.prefs.averagePrice) {
         // average-price.js
         let averagePrice = document.createElement('script');
 
@@ -333,7 +334,7 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(averagePrice);
       }
 
-      if ( result.prefs.blockBuyers ) {
+      if (result.prefs.blockBuyers) {
         // block-buyers.js
         let blockBuyers = document.createElement('script');
 
@@ -377,7 +378,7 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(blurryImageFix);
       }
 
-      if ( result.prefs.confirmBeforeRemoving ) {
+      if (result.prefs.confirmBeforeRemoving) {
 
         let confirmBeforeRemoving = document.createElement('script');
 
@@ -444,7 +445,7 @@ appendFragment([resourceLibrary]).then(() => {
       }
 
       // demand-index.js
-      if ( result.prefs.demandIndex ) {
+      if (result.prefs.demandIndex) {
 
         let demandIndex = document.createElement('script');
 
@@ -455,8 +456,19 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(demandIndex);
       }
 
+      if (result.prefs.editingFeatures) {
+
+        let editingFeatures = document.createElement("script");
+
+        editingFeatures.type = 'text/javascript';
+        editingFeatures.src = chrome.extension.getURL('js/extension/features/editing-features.js');
+        editingFeatures.className = 'de-init';
+
+        elems.push(editingFeatures);
+      }
+
       // everlasting collection
-      if ( result.prefs.everlastingCollection ) {
+      if (result.prefs.everlastingCollection) {
 
         // everlasting-collection-notes.js
         let everlastingCollectionNotes = document.createElement('script');
@@ -491,7 +503,7 @@ appendFragment([resourceLibrary]).then(() => {
 
         // everlasting-marketplace.js && everlasting-marketplace-release-page.js
         let everlastingMarket = document.createElement('script'),
-            everlastingMarketReleases = document.createElement('script');
+          everlastingMarketReleases = document.createElement('script');
 
         everlastingMarket.type = 'text/javascript';
         everlastingMarket.src = chrome.extension.getURL('js/extension/features/everlasting-marketplace.js');
@@ -550,7 +562,7 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(filterMediaCondition);
       }
 
-      if ( result.prefs.filterPrices ) {
+      if (result.prefs.filterPrices) {
 
         let filterPrices = document.createElement('script');
 
@@ -643,7 +655,7 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(notesCount);
       }
 
-      if ( result.prefs.quickSearch ) {
+      if (result.prefs.quickSearch) {
 
         // quick-search.js
         let quickSearch = document.createElement('script');
@@ -667,7 +679,7 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(inventoryRatings);
       }
 
-      if ( result.prefs.listsInTabs ) {
+      if (result.prefs.listsInTabs) {
 
         // list-items-in-tabs.js
         let listsInTabs = document.createElement('script');
@@ -691,7 +703,7 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(randomItem);
       }
 
-      if ( result.prefs.ratingPercent ) {
+      if (result.prefs.ratingPercent) {
 
         // rating-percent.js
         let ratingPercent = document.createElement('script');
@@ -724,7 +736,7 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(readability);
       }
 
-      if ( result.prefs.relativeSoldDate ) {
+      if (result.prefs.relativeSoldDate) {
 
         // relative-sold-date.js
         let relativeSoldDate = document.createElement('script');
@@ -749,7 +761,7 @@ appendFragment([resourceLibrary]).then(() => {
       }
 
       // release-ratings
-      if ( result.prefs.releaseRatings ) {
+      if (result.prefs.releaseRatings) {
 
         let releaseRatings = document.createElement('script');
 
@@ -761,7 +773,7 @@ appendFragment([resourceLibrary]).then(() => {
       }
 
       // release-scanner
-      if ( result.prefs.releaseScanner ) {
+      if (result.prefs.releaseScanner) {
 
         let releaseScanner = document.createElement('script');
 
@@ -772,7 +784,7 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(releaseScanner);
       }
 
-      if ( result.prefs.removeFromWantlist ) {
+      if (result.prefs.removeFromWantlist) {
 
         // remove-from-wantlist.js
         let removeFromWantlist = document.createElement('script');
@@ -784,7 +796,7 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(removeFromWantlist);
       }
 
-      if ( result.prefs.sellerItemsInCart ) {
+      if (result.prefs.sellerItemsInCart) {
 
         let sellerItemsInCart = document.createElement('script');
 
@@ -795,7 +807,7 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(sellerItemsInCart);
       }
 
-      if ( result.prefs.sellerRep ) {
+      if (result.prefs.sellerRep) {
 
         // seller-rep.js
         let sellerRep = document.createElement('script');
@@ -807,7 +819,7 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(sellerRep);
       }
 
-      if ( result.prefs.sortButtons ) {
+      if (result.prefs.sortButtons) {
 
         let sortButton_css = document.createElement('link');
 
@@ -816,7 +828,7 @@ appendFragment([resourceLibrary]).then(() => {
         sortButton_css.href = chrome.extension.getURL('css/sort-buttons.css');
         sortButton_css.id = 'sortButton_css';
 
-        elems.push( sortButton_css );
+        elems.push(sortButton_css);
 
         // sort-explore-lists.js
         let sortExploreScript = document.createElement('script');
@@ -825,7 +837,7 @@ appendFragment([resourceLibrary]).then(() => {
         sortExploreScript.src = chrome.extension.getURL('js/extension/features/sort-explore-lists.js');
         sortExploreScript.className = 'de-init';
 
-        elems.push( sortExploreScript );
+        elems.push(sortExploreScript);
 
         // sort-marketplace-lists.js
         let sortMarketplaceScript = document.createElement('script');
@@ -834,7 +846,7 @@ appendFragment([resourceLibrary]).then(() => {
         sortMarketplaceScript.src = chrome.extension.getURL('js/extension/features/sort-marketplace-lists.js');
         sortMarketplaceScript.className = 'de-init';
 
-        elems.push( sortMarketplaceScript );
+        elems.push(sortMarketplaceScript);
 
         // sort-personal-lists.js
         let sortPersonalListsScript = document.createElement('script');
@@ -843,7 +855,7 @@ appendFragment([resourceLibrary]).then(() => {
         sortPersonalListsScript.src = chrome.extension.getURL('js/extension/features/sort-personal-lists.js');
         sortPersonalListsScript.className = 'de-init';
 
-        elems.push( sortPersonalListsScript );
+        elems.push(sortPersonalListsScript);
       }
 
       if (result.prefs.suggestedPrices) {
@@ -877,7 +889,7 @@ appendFragment([resourceLibrary]).then(() => {
       }
 
       // tweak-discriminators.js
-      if ( result.prefs.tweakDiscrims ) {
+      if (result.prefs.tweakDiscrims) {
 
         let tweakDiscrims = document.createElement('script');
 
@@ -1123,52 +1135,52 @@ appendFragment([resourceLibrary]).then(() => {
 
       return resolve(result);
     })
-    .then(() => {
-      // Get preferences from extension side and save to DOM side.
-      return new Promise(resolve => {
-        chrome.runtime.sendMessage({ request: 'userPreferences' }, response => {
+      .then(() => {
+        // Get preferences from extension side and save to DOM side.
+        return new Promise(resolve => {
+          chrome.runtime.sendMessage({ request: 'userPreferences' }, response => {
 
-          let target = localStorage.getItem('userPreferences'),
+            let target = localStorage.getItem('userPreferences'),
               source = response.userPreferences,
               currentFilterState = getCurrentFilterState(),
               userCurrency = prefs.userCurrency,
               newPrefs;
 
-          target = target ? JSON.parse(target) : response.userPreferences;
-          newPrefs = Object.assign(target, source, { currentFilterState }, { userCurrency });
+            target = target ? JSON.parse(target) : response.userPreferences;
+            newPrefs = Object.assign(target, source, { currentFilterState }, { userCurrency });
 
-          return resolve(newPrefs);
+            return resolve(newPrefs);
+          });
         });
-      });
-    })
-    .then(newPrefs => {
-      // Instantiate default options
-      return new Promise(resolve => {
-        if ( !Object.prototype.hasOwnProperty.call(newPrefs, 'options') ) {
+      })
+      .then(newPrefs => {
+        // Instantiate default options
+        return new Promise(resolve => {
+          if (!Object.prototype.hasOwnProperty.call(newPrefs, 'options')) {
 
-          let options = {
-                colorize: false,
-                comments: false,
-                debug: false,
-                quicksearch: '',
-                threshold: 2,
-                unitTests: false
-              };
+            let options = {
+              colorize: false,
+              comments: false,
+              debug: false,
+              quicksearch: '',
+              threshold: 2,
+              unitTests: false
+            };
 
-          newPrefs.options = options;
-        }
-        localStorage.setItem('userPreferences', JSON.stringify(newPrefs));
-        return resolve();
-      });
-    })
-    .then(() => appendFragment(elems))
-    .then(() => document.ready())
-    .then(() => {
-      // DOM clean up
-      document.querySelectorAll('.de-init').forEach(child => {
-        child.parentNode.removeChild(child);
-      });
-    })
-    .catch(err => console.error('Error injecting scripts', err));
+            newPrefs.options = options;
+          }
+          localStorage.setItem('userPreferences', JSON.stringify(newPrefs));
+          return resolve();
+        });
+      })
+      .then(() => appendFragment(elems))
+      .then(() => document.ready())
+      .then(() => {
+        // DOM clean up
+        document.querySelectorAll('.de-init').forEach(child => {
+          child.parentNode.removeChild(child);
+        });
+      })
+      .catch(err => console.error('Error injecting scripts', err));
   });
 });

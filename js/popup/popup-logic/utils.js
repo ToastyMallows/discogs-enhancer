@@ -40,6 +40,7 @@ export function applySave(message, event, currencyTarget = 'currency') {
         converter: document.getElementById('toggleConverter').checked,
         darkTheme: document.getElementById('toggleDarkTheme').checked,
         demandIndex: document.getElementById('toggleDemandIndex').checked,
+        editingFeatures: document.getElementById('toggleEditingFeatures').checked,
         everlastingCollection: document.getElementById('toggleEverlastingCollection').checked,
         everlastingMarket: document.getElementById('toggleEverlastingMarket').checked,
         favoriteSellers: document.getElementById('toggleFavoriteSellers').checked,
@@ -94,11 +95,11 @@ export function applySave(message, event, currencyTarget = 'currency') {
         useYoutube: document.getElementById('youtube').checked
       };
 
-  chrome.storage.sync.set({prefs: prefs}, function() {
+      chrome.storage.sync.set({prefs: prefs}, function() {
 
-    // Make sure both user currency selects are in sync.
-    // TODO: move this into a global single preference
-    document.querySelectorAll('#currency, #filterPricesCurrency').forEach(select => {
+      // Make sure both user currency selects are in sync.
+      // TODO: move this into a global single preference
+      document.querySelectorAll('#currency, #filterPricesCurrency').forEach(select => {
       select.value = document.getElementById(currencyTarget).value;
     });
 
