@@ -5,23 +5,15 @@ rl.ready(() => {
 
     const newActionClass = "de-editing-features-new-track-action";
     const discogsTrackActionMenuSelector = ".subform_track_actions ul.action_menu";
-    //const discogsAddTracksSelector = "table.subform_tracklist tfoot tr td button";
     const discogsLoadingClass = "loading-placeholder";
     const discogsSubformTrackActionClass = "subform_track_action";
     const discogsSubformTracklistClass = "subform_tracklist";
     const discogsTrackTitleClass = "subform_track_title";
-    //let addTracksButton;
     let lastTrackCount = 0;
     let firstLoad = true;
     let allTrackActionMenus = [];
 
     function loadFeature() {
-
-      // if (firstLoad) {
-      //   // find the 'Add Tracks' button
-      //   addTracksButton = document.querySelector(discogsAddTracksSelector);
-      //   if (!addTracksButton) return;
-      // }
 
       if (!firstLoad) {
         let existingActions = document.getElementsByClassName(newActionClass);
@@ -107,6 +99,7 @@ rl.ready(() => {
       let insertTrackAction;
 
       newActionListItem.parentElement.querySelectorAll("li a").forEach((action) => {
+        // TODO: find a way to get this without comparing an English string
         if (action.innerText === "Insert Track") {
           insertTrackAction = action;
         }
