@@ -5,6 +5,7 @@ rl.ready(() => {
 
     const newActionClass = "de-editing-features-new-track-action";
     const discogsTrackActionMenuSelector = ".subform_track_actions ul.action_menu";
+    const discogsEditOrSaveArtistsButtonSelector = ".editable_list .editable_artist_list_actions button";
     const discogsLoadingClass = "loading-placeholder";
     const discogsSubformTrackActionClass = "subform_track_action";
     const discogsSubformTracklistClass = "subform_tracklist";
@@ -100,10 +101,105 @@ rl.ready(() => {
     }
 
     async function populateNewTrackArtists(sourceTrackElement, destinationTrackElement) {
-      let sourceTrackArtistsBaseElement = sourceTrackElement.querySelector(`.${discogsTrackArtistsClass}`);
-      let isCurrentlyEditing = isTrackMetadataBeingEdited(sourceTrackArtistsBaseElement);
+      let sourceArtists = getSourceArtists(sourceTrackElement);
+      
+      if (sourceArtists.length === 0) {
+        return;
+      }
+    }
 
-      // alert("Source artist editing: " + isCurrentlyEditing);
+    function getSourceArtists(sourceTrackElement) {
+      let sourceTrackArtistsBaseElement = sourceTrackElement.querySelector(`.${discogsTrackArtistsClass}`);
+
+      let artistsListItems = sourceTrackArtistsBaseElement.querySelectorAll(".editable_list .editable_items_list li");
+
+      if (artistsListItems.length === 0) {
+        return [];
+      }
+
+      let isCurrentlyEditing = isTrackMetadataBeingEdited(sourceTrackArtistsBaseElement);
+      let forcedEditing = false;
+
+      if (!isCurrentlyEditing) {
+        startEditingArtist(sourceTrackArtistsBaseElement)
+        forcedEditing = true;
+      }
+
+      let artists = [];
+      let hasJoins = artistsListItems.length > 1;
+
+      for (let i = 0; i < artistsListItems.length; i++) {
+        const artistListItem = artistsListItems[i];
+        let name = artistListItem.querySelector("fieldset > .lookup-field > input").value;
+
+        let join = undefined;
+        let avn = undefined;
+
+        let inputs = artistListItem.querySelectorAll("fieldset > input");
+
+        let avnInput = undefined;
+        let joinInput = undefined;
+
+        if (inputs.length !== 0) {
+          if (hasJoins && i !== (artistsListItems.length - 1)) {
+            if (inputs.length === 2) {
+              avnInput = inputs[0];
+              joinInput = inputs[1]
+            } else {
+              joinInput = inputs[0];
+            }
+          } else {
+            // does not have joins or is the last artist in the list
+            // may have an AVN
+            avnInput = inputs[0];
+          }
+        }
+
+        avn = avnInput ? avnInput.value : undefined;
+        join = joinInput ? joinInput.value : undefined;
+
+        artists.push(new Artist(name, avn, join));
+      }
+      
+      if (forcedEditing) {
+        stopEditingArtist(sourceTrackArtistsBaseElement);
+      }
+
+      return artists;
+    }
+
+    function startEditingArtist(trackBaseElement) {
+      let editableActionButtons = trackBaseElement.querySelectorAll(discogsEditOrSaveArtistsButtonSelector);
+
+      if (editableActionButtons.length !== 2) {
+        // Add and Edit buttons
+        console.error("Edit button not found");
+        return;
+      }
+
+      let editButton = editableActionButtons[1];
+
+      editButton.click();
+    }
+
+    function stopEditingArtist(trackBaseElement) {
+      let editableActionButtons = trackBaseElement.querySelectorAll(discogsEditOrSaveArtistsButtonSelector);
+
+      if (editableActionButtons.length !== 2) {
+        // Add and Save buttons
+        console.error("Save button not found");
+        return;
+      }
+
+      let saveButton = editableActionButtons[1];
+
+      saveButton.click();
+    }
+
+    function Artist(name, avn, join) {
+      this.name = name;
+      this.avn = avn;
+      this.join = join;
     }
 
     function isTrackMetadataBeingEdited(trackAncestor) {
