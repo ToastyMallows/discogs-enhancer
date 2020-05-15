@@ -97,7 +97,7 @@ rl.ready(() => {
       let sourceTrackPositionElement = sourceTrackElement.querySelector(`.${discogsTrackPositionClass} input`);
       let destinationTrackPositionElement = destinationTrackElement.querySelector(`.${discogsTrackPositionClass} input`);
 
-      setValue(sourceTrackPositionElement, destinationTrackPositionElement);
+      setValue(sourceTrackPositionElement.value, destinationTrackPositionElement);
     }
 
     async function populateNewTrackArtists(sourceTrackElement, destinationTrackElement) {
@@ -106,21 +106,65 @@ rl.ready(() => {
       if (sourceArtists.length === 0) {
         return;
       }
+
+      populateDestinationArtists(sourceArtists, destinationTrackElement);
+    }
+
+    function populateDestinationArtists(artists, destinationTrackElement) {
+      const destinationTrackArtistsBaseElement = destinationTrackElement.querySelector(`.${discogsTrackArtistsClass}`);
+      const addButton = destinationTrackArtistsBaseElement.querySelector(discogsEditOrSaveArtistsButtonSelector);
+
+      startEditingArtist(destinationTrackArtistsBaseElement);
+
+      for (let i = 0; i < artists.length; i++) {
+        // Add one more artist than we need.
+        // If we don't, sometimes the last artist shows up empty.
+        // I think this is because of the lookup search box that pops up.
+        addButton.click();
+      }
+
+      let artistsListItems = destinationTrackArtistsBaseElement.querySelectorAll(".editable_list .editable_items_list li");
+
+      for (let i = 0; i < artists.length; i++) {
+        const artist = artists[i];
+        const artistListItem = artistsListItems[i];
+
+        const nameInput = artistListItem.querySelector("fieldset > .lookup-field > input");
+        setValue(artist.name, nameInput);
+
+        if (artist.avn) {
+          artistListItem.querySelector("fieldset > button").click();
+        }
+
+        const inputs = artistListItem.querySelectorAll("fieldset > input");
+
+        if (artist.avn && artist.join) {
+          setValue(artist.avn, inputs[0]);
+          setValue(artist.join, inputs[1]);
+        } else if (artist.avn) {
+          setValue(artist.avn, inputs[0]);
+        } else if (artist.join) {
+          setValue(artist.join, inputs[0]);
+        }
+      }
+
+      // Remove the last (empty) artist we added earlier.
+      artistsListItems[artistsListItems.length - 1].querySelector(".editable_actions button.editable_input_remove").click();
+
+      stopEditingArtist(destinationTrackArtistsBaseElement);
     }
 
     function getSourceArtists(sourceTrackElement) {
-      let sourceTrackArtistsBaseElement = sourceTrackElement.querySelector(`.${discogsTrackArtistsClass}`);
-
-      let artistsListItems = sourceTrackArtistsBaseElement.querySelectorAll(".editable_list .editable_items_list li");
+      const sourceTrackArtistsBaseElement = sourceTrackElement.querySelector(`.${discogsTrackArtistsClass}`);
+      const artistsListItems = sourceTrackArtistsBaseElement.querySelectorAll(".editable_list .editable_items_list li");
 
       if (artistsListItems.length === 0) {
         return [];
       }
 
-      let isCurrentlyEditing = isTrackMetadataBeingEdited(sourceTrackArtistsBaseElement);
       let forcedEditing = false;
 
-      if (!isCurrentlyEditing) {
+      if (!isTrackMetadataBeingEdited(sourceTrackArtistsBaseElement)) {
         startEditingArtist(sourceTrackArtistsBaseElement)
         forcedEditing = true;
       }
@@ -135,7 +179,7 @@ rl.ready(() => {
         let join = undefined;
         let avn = undefined;
 
-        let inputs = artistListItem.querySelectorAll("fieldset > input");
+        const inputs = artistListItem.querySelectorAll("fieldset > input");
 
         let avnInput = undefined;
         let joinInput = undefined;
@@ -171,15 +215,9 @@ rl.ready(() => {
     function startEditingArtist(trackBaseElement) {
       let editableActionButtons = trackBaseElement.querySelectorAll(discogsEditOrSaveArtistsButtonSelector);
 
-      if (editableActionButtons.length !== 2) {
-        // Add and Edit buttons
-        console.error("Edit button not found");
-        return;
-      }
+      const editOrAddButton = editableActionButtons.length === 1 ? editableActionButtons[0] : editableActionButtons[1];
 
-      let editButton = editableActionButtons[1];
-
-      editButton.click();
+      editOrAddButton.click();
     }
 
     function stopEditingArtist(trackBaseElement) {
@@ -211,18 +249,18 @@ rl.ready(() => {
       let sourceTrackTitleElement = sourceTrackElement.querySelector(`.${discogsTrackTitleClass} input`);
       let destinationTrackTitleElement = destinationTrackElement.querySelector(`.${discogsTrackTitleClass} input`);
 
-      setValue(sourceTrackTitleElement, destinationTrackTitleElement);
+      setValue(sourceTrackTitleElement.value, destinationTrackTitleElement);
     }
 
     async function populateNewTrackDuration(sourceTrackElement, destinationTrackElement) {
       let sourceTrackDurationElement = sourceTrackElement.querySelector(`.${discogsTrackDurationClass} input`);
       let destinationTrackDurationElement = destinationTrackElement.querySelector(`.${discogsTrackDurationClass} input`);
 
-      setValue(sourceTrackDurationElement, destinationTrackDurationElement);
+      setValue(sourceTrackDurationElement.value, destinationTrackDurationElement);
     }
 
-    function setValue(sourceElement, destinationElement) {
-      destinationElement.setAttribute("value", sourceElement.value);
+    function setValue(value, destinationElement) {
+      destinationElement.setAttribute("value", value);
       destinationElement.dispatchEvent(new Event("input", { bubbles: true }));
       destinationElement.dispatchEvent(new Event("change", { bubbles: true }));
       destinationElement.dispatchEvent(new Event("blur", { bubbles: true }));
