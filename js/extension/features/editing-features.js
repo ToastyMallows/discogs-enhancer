@@ -37,11 +37,43 @@ rl.ready(() => {
       }
     }
 
+    function getCloneTrackButtonText() {
+      const language = rl.language();
+      switch (language) {
+        // German
+        case 'de':
+          return "Titel Klonen";
+        // Italian
+        case 'it':
+          return "Traccia Clone";
+        // Korean
+        case 'ko':
+          return "클론 트랙";
+        // Spanish
+        case 'es':
+          return "Pista De Clonación";
+        // French
+        case 'fr':
+          return "Cloner La Piste";
+        // Portuguese
+        case 'pt':
+          return "Clonar Faixa";
+        // Japanese
+        case 'ja':
+          return "重複したトラック";
+        // Russian
+        case 'ru':
+          return "Клон трек";
+        // English
+        default:
+          return "Clone Track";
+      }
+    }
+
     function createCloneTrackAction() {
       let newActionAnchor = document.createElement("a");
       newActionAnchor.onclick = cloneTrack;
-      // TODO: Localize to the user's language, rl.language();
-      newActionAnchor.innerText = "Clone Track";
+      newActionAnchor.innerText = getCloneTrackButtonText();
 
       let newActionListItem = document.createElement("li");
 
