@@ -120,14 +120,74 @@ rl.ready(() => {
         populateNewTrackPosition(sourceTrackElement, destinationTrackElement),
         populateNewTrackArtists(sourceTrackElement, destinationTrackElement),
         populateNewTrackTitle(sourceTrackElement, destinationTrackElement),
-        // populateNewTrackCredits(sourceTrackElement, destinationTrackElement),
+        populateNewTrackCredits(sourceTrackElement, destinationTrackElement),
         populateNewTrackDuration(sourceTrackElement, destinationTrackElement),
       ]);
     }
 
+    async function populateNewTrackCredits(sourceTrackElement, destinationTrackElement) {
+      let sourceCredits = getSourceCredits(sourceTrackElement);
+
+      if (sourceCredits.length === 0) {
+        return;
+      }
+
+      populateDestinationCredits(sourceCredits, destinationTrackElement);
+    }
+
+    function populateDestinationCredits(sourceCredits, destinationTrackElement) {
+      
+    }
+
+    function getSourceCredits(sourceTrackElement) {
+      const sourceTrackCreditsBaseElement = sourceTrackElement.querySelector(`.${discogsTrackTitleClass} > .editable_list`);
+      const creditsListItems = sourceTrackCreditsBaseElement.querySelectorAll(".editable_items_list > li");
+
+      if (creditsListItems.length === 0) {
+        return [];
+      }
+
+      let forcedEditing = false;
+
+      if (!isTrackMetadataBeingEdited(sourceTrackCreditsBaseElement)) {
+        startEditing(sourceTrackCreditsBaseElement);
+        forcedEditing = true;
+      }
+
+      const credits = [];
+      
+      for (let i = 0; i < creditsListItems.length; i++) {
+        const creditListItem = creditsListItems[i];
+        
+        const rolesButton = creditListItem.querySelector(".lookup-copy-button");
+        rolesButton.dispatchEvent(new Event("mousedown", { bubbles: true }));
+        rolesButton.dispatchEvent(new Event("click", { bubbles: true }));
+        rolesButton.dispatchEvent(new Event("mouseup", { bubbles: true }));
+
+        const inputs = creditListItem.querySelectorAll("input");
+
+        const roles = inputs[0].value;
+        const name = inputs[1].value;
+        let anv = undefined;
+
+        if (inputs.length === 3) {
+          // there's an ANV
+          anv = inputs[2].value;
+        }
+
+        credits.push(new Credit(roles, name, anv))
+      }
+
+      if (forcedEditing) {
+        stopEditing(sourceTrackCreditsBaseElement);
+      }
+
+      return credits;
+    }
+
     async function populateNewTrackPosition(sourceTrackElement, destinationTrackElement) {
-      let sourceTrackPositionElement = sourceTrackElement.querySelector(`.${discogsTrackPositionClass} input`);
-      let destinationTrackPositionElement = destinationTrackElement.querySelector(`.${discogsTrackPositionClass} input`);
+      const sourceTrackPositionElement = sourceTrackElement.querySelector(`.${discogsTrackPositionClass} input`);
+      const destinationTrackPositionElement = destinationTrackElement.querySelector(`.${discogsTrackPositionClass} input`);
 
       setValue(sourceTrackPositionElement.value, destinationTrackPositionElement);
     }
@@ -146,7 +206,7 @@ rl.ready(() => {
       const destinationTrackArtistsBaseElement = destinationTrackElement.querySelector(`.${discogsTrackArtistsClass}`);
       const addButton = destinationTrackArtistsBaseElement.querySelector(discogsEditOrSaveArtistsButtonSelector);
 
-      startEditingArtist(destinationTrackArtistsBaseElement);
+      startEditing(destinationTrackArtistsBaseElement);
 
       for (let i = 0; i < artists.length; i++) {
         // Add one more artist than we need.
@@ -155,7 +215,7 @@ rl.ready(() => {
         addButton.click();
       }
 
-      let artistsListItems = destinationTrackArtistsBaseElement.querySelectorAll(".editable_list .editable_items_list li");
+      const artistsListItems = destinationTrackArtistsBaseElement.querySelectorAll(".editable_list .editable_items_list li");
 
       for (let i = 0; i < artists.length; i++) {
         const artist = artists[i];
@@ -164,17 +224,17 @@ rl.ready(() => {
         const nameInput = artistListItem.querySelector("fieldset > .lookup-field > input");
         setValue(artist.name, nameInput);
 
-        if (artist.avn) {
+        if (artist.anv) {
           artistListItem.querySelector("fieldset > button").click();
         }
 
         const inputs = artistListItem.querySelectorAll("fieldset > input");
 
-        if (artist.avn && artist.join) {
-          setValue(artist.avn, inputs[0]);
+        if (artist.anv && artist.join) {
+          setValue(artist.anv, inputs[0]);
           setValue(artist.join, inputs[1]);
-        } else if (artist.avn) {
-          setValue(artist.avn, inputs[0]);
+        } else if (artist.anv) {
+          setValue(artist.anv, inputs[0]);
         } else if (artist.join) {
           setValue(artist.join, inputs[0]);
         }
@@ -183,7 +243,7 @@ rl.ready(() => {
       // Remove the last (empty) artist we added earlier.
       artistsListItems[artistsListItems.length - 1].querySelector(".editable_actions button.editable_input_remove").click();
 
-      stopEditingArtist(destinationTrackArtistsBaseElement);
+      stopEditing(destinationTrackArtistsBaseElement);
     }
 
     function getSourceArtists(sourceTrackElement) {
@@ -209,32 +269,32 @@ rl.ready(() => {
         let name = artistListItem.querySelector("fieldset > .lookup-field > input").value;
 
         let join = undefined;
-        let avn = undefined;
+        let anv = undefined;
 
         const inputs = artistListItem.querySelectorAll("fieldset > input");
 
-        let avnInput = undefined;
+        let anvInput = undefined;
         let joinInput = undefined;
 
         if (inputs.length !== 0) {
           if (hasJoins && i !== (artistsListItems.length - 1)) {
             if (inputs.length === 2) {
-              avnInput = inputs[0];
+              anvInput = inputs[0];
               joinInput = inputs[1]
             } else {
               joinInput = inputs[0];
             }
           } else {
             // does not have joins or is the last artist in the list
-            // may have an AVN
-            avnInput = inputs[0];
+            // may have an ANV
+            anvInput = inputs[0];
           }
         }
 
-        avn = avnInput ? avnInput.value : undefined;
+        anv = anvInput ? anvInput.value : undefined;
         join = joinInput ? joinInput.value : undefined;
 
-        artists.push(new Artist(name, avn, join));
+        artists.push(new Artist(name, anv, join));
       }
       
       if (forcedEditing) {
@@ -244,16 +304,16 @@ rl.ready(() => {
       return artists;
     }
 
-    function startEditingArtist(trackBaseElement) {
-      let editableActionButtons = trackBaseElement.querySelectorAll(discogsEditOrSaveArtistsButtonSelector);
+    function startEditing(baseElement) {
+      let editableActionButtons = baseElement.querySelectorAll(discogsEditOrSaveArtistsButtonSelector);
 
       const editOrAddButton = editableActionButtons.length === 1 ? editableActionButtons[0] : editableActionButtons[1];
 
       editOrAddButton.click();
     }
 
-    function stopEditingArtist(trackBaseElement) {
-      let editableActionButtons = trackBaseElement.querySelectorAll(discogsEditOrSaveArtistsButtonSelector);
+    function stopEditing(baseElement) {
+      let editableActionButtons = baseElement.querySelectorAll(discogsEditOrSaveArtistsButtonSelector);
 
       if (editableActionButtons.length !== 2) {
         // Add and Save buttons
@@ -266,10 +326,16 @@ rl.ready(() => {
       saveButton.click();
     }
 
-    function Artist(name, avn, join) {
+    function Artist(name, anv, join) {
       this.name = name;
-      this.avn = avn;
+      this.anv = anv;
       this.join = join;
+    }
+
+    function Credit(roles, name, anv) {
+      this.roles = roles;
+      this.name = name;
+      this.anv = anv;
     }
 
     function isTrackMetadataBeingEdited(trackAncestor) {
