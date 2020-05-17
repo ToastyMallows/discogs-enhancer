@@ -3,7 +3,7 @@ rl.ready(() => {
 
   window.addEventListener("DOMContentLoaded", () => {
 
-    const newActionClass = "de-editing-features-new-track-action";
+    const newActionClass = "de-clone-track-action";
     const discogsTrackActionMenuSelector = ".subform_track_actions ul.action_menu";
     const discogsEditOrSaveArtistsButtonSelector = ".editable_list .editable_artist_list_actions button";
     const discogsLoadingClass = "loading-placeholder";

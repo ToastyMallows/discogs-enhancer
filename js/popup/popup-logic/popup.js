@@ -86,12 +86,12 @@ window.addEventListener('load', () => {
       toggleBlockBuyers = document.getElementById('toggleBlockBuyers'),
       toggleBlockSellers = document.getElementById('toggleBlockSellers'),
       toggleBlurryImageFix = document.getElementById('toggleBlurryImageFix'),
+      toggleCloneTrack = document.getElementById('toggleCloneTrack'),
       toggleConfirmBeforeRemoving = document.getElementById('toggleConfirmBeforeRemoving'),
       toggleCollectionUi = document.getElementById('toggleCollectionUi'),
       toggleConverter = document.getElementById('toggleConverter'),
       toggleDarkTheme = document.getElementById('toggleDarkTheme'),
       toggleDemandIndex = document.getElementById('toggleDemandIndex'),
-      toggleEditingFeatures = document.getElementById('toggleEditingFeatures'),
       toggleEverlastingCollection = document.getElementById('toggleEverlastingCollection'),
       toggleEverlastingMarket = document.getElementById('toggleEverlastingMarket'),
       toggleFavoriteSellers = document.getElementById('toggleFavoriteSellers'),
@@ -264,12 +264,12 @@ window.addEventListener('load', () => {
   toggleBlockBuyers.addEventListener('change', triggerSave);
   toggleBlockSellers.addEventListener('change', triggerSave);
   toggleBlurryImageFix.addEventListener('change', triggerSave);
+  toggleCloneTrack.addEventListener('change', triggerSave);
   toggleConfirmBeforeRemoving.addEventListener('change', triggerSave);
   toggleCollectionUi.addEventListener('change', triggerSave);
   toggleConverter.addEventListener('change', triggerSave);
   toggleDarkTheme.addEventListener('change', darkTheme.useDarkTheme);
   toggleDemandIndex.addEventListener('change', triggerSave);
-  toggleEditingFeatures.addEventListener('change', triggerSave);
   toggleEverlastingCollection.addEventListener('change', triggerSave);
   toggleEverlastingMarket.addEventListener('change', triggerSave);
   toggleFavoriteSellers.addEventListener('change', triggerSave);
@@ -347,12 +347,12 @@ window.addEventListener('load', () => {
       toggleBlockBuyers.checked = result.prefs.blockBuyers;
       toggleBlockSellers.checked = result.prefs.blockSellers;
       toggleBlurryImageFix.checked = result.prefs.blurryImageFix;
+      toggleCloneTrack.checked = result.prefs.cloneTrack;
       toggleConfirmBeforeRemoving.checked = result.prefs.confirmBeforeRemoving;
       toggleCollectionUi.checked = result.prefs.collectionUi;
       toggleConverter.checked = result.prefs.converter;
       toggleDarkTheme.checked = result.prefs.darkTheme;
       toggleDemandIndex.checked = result.prefs.demandIndex;
-      toggleEditingFeatures.checked = result.prefs.editingFeatures;
       toggleEverlastingCollection.checked = result.prefs.everlastingCollection;
       toggleEverlastingMarket.checked = result.prefs.everlastingMarket;
       toggleFavoriteSellers.checked = result.prefs.favoriteSellers;

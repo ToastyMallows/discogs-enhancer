@@ -132,12 +132,12 @@ appendFragment([resourceLibrary]).then(() => {
         blockBuyers: false,
         blockSellers: true,
         blurryImageFix: false,
+        cloneTrack: false,
         confirmBeforeRemoving: false,
         collectionUi: false,
         converter: true,
         darkTheme: false,
         demandIndex: false,
-        editingFeatures: false,
         everlastingCollection: false,
         everlastingMarket: true,
         favoriteSellers: true,
@@ -378,6 +378,17 @@ appendFragment([resourceLibrary]).then(() => {
         elems.push(blurryImageFix);
       }
 
+      if (result.prefs.cloneTrack) {
+
+        let cloneTrack = document.createElement("script");
+
+        cloneTrack.type = 'text/javascript';
+        cloneTrack.src = chrome.extension.getURL('js/extension/features/clone-track.js');
+        cloneTrack.className = 'de-init';
+
+        elems.push(cloneTrack);
+      }
+
       if (result.prefs.confirmBeforeRemoving) {
 
         let confirmBeforeRemoving = document.createElement('script');
@@ -454,17 +465,6 @@ appendFragment([resourceLibrary]).then(() => {
         demandIndex.className = 'de-init';
 
         elems.push(demandIndex);
-      }
-
-      if (result.prefs.editingFeatures) {
-
-        let editingFeatures = document.createElement("script");
-
-        editingFeatures.type = 'text/javascript';
-        editingFeatures.src = chrome.extension.getURL('js/extension/features/editing-features.js');
-        editingFeatures.className = 'de-init';
-
-        elems.push(editingFeatures);
       }
 
       // everlasting collection
