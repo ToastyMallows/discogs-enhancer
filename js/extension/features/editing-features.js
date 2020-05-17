@@ -9,6 +9,9 @@ rl.ready(() => {
     const discogsLoadingClass = "loading-placeholder";
     const discogsSubformTrackActionClass = "subform_track_action";
     const discogsSubformTracklistClass = "subform_tracklist";
+    const discogsEditableListClass = "editable_list";
+    const discogsEditableItemsListClass = "editable_items_list";
+    const discogsEditableListItemSelector = `.${discogsEditableListClass} .${discogsEditableItemsListClass} li`;
     const discogsTrackTitleClass = "subform_track_title";
     const discogsTrackPositionClass = "subform_track_pos";
     const discogsTrackDurationClass = "subform_track_duration";
@@ -136,12 +139,50 @@ rl.ready(() => {
     }
 
     function populateDestinationCredits(sourceCredits, destinationTrackElement) {
-      
+      const destinationTrackCreditsBaseElement = destinationTrackElement.querySelector(`.${discogsTrackTitleClass} > .${discogsEditableListClass}`);
+      const addButton = destinationTrackCreditsBaseElement.querySelector(discogsEditOrSaveArtistsButtonSelector);
+
+      startEditing(destinationTrackCreditsBaseElement);
+
+      for (let i = 0; i < sourceCredits.length; i++) {
+        // Add one more credit than we need.
+        // If we don't, sometimes the last credit shows up empty.
+        // I think this is because of the lookup search box that pops up.
+        addButton.click();
+      }
+
+      const creditsListItems = destinationTrackCreditsBaseElement.querySelectorAll(`.${discogsEditableItemsListClass} > li`);
+
+      for (let i = 0; i < sourceCredits.length; i++) {
+        const credit = sourceCredits[i];
+        const creditListItem = creditsListItems[i];
+
+        const rolesButton = creditListItem.querySelector(".lookup-copy-button");
+        clickReactButton(rolesButton);
+
+        if (credit.anv) {
+          creditListItem.querySelector("fieldset > button").click();
+        }
+
+        const inputs = creditListItem.querySelectorAll("input");
+
+        setValue(credit.roles, inputs[0]);
+        setValue(credit.name, inputs[1]);
+
+        if (credit.anv) {
+          setValue(credit.anv, inputs[2]);
+        }
+      }
+
+      // Remove the last (empty) credit we added earlier.
+      creditsListItems[creditsListItems.length - 1].querySelector(".editable_actions button.editable_input_remove").click();
+
+      stopEditing(destinationTrackCreditsBaseElement);
     }
 
     function getSourceCredits(sourceTrackElement) {
-      const sourceTrackCreditsBaseElement = sourceTrackElement.querySelector(`.${discogsTrackTitleClass} > .editable_list`);
-      const creditsListItems = sourceTrackCreditsBaseElement.querySelectorAll(".editable_items_list > li");
+      const sourceTrackCreditsBaseElement = sourceTrackElement.querySelector(`.${discogsTrackTitleClass} > .${discogsEditableListClass}`);
+      const creditsListItems = sourceTrackCreditsBaseElement.querySelectorAll(discogsEditableListItemSelector);
 
       if (creditsListItems.length === 0) {
         return [];
@@ -158,11 +199,8 @@ rl.ready(() => {
       
       for (let i = 0; i < creditsListItems.length; i++) {
         const creditListItem = creditsListItems[i];
-        
         const rolesButton = creditListItem.querySelector(".lookup-copy-button");
-        rolesButton.dispatchEvent(new Event("mousedown", { bubbles: true }));
-        rolesButton.dispatchEvent(new Event("click", { bubbles: true }));
-        rolesButton.dispatchEvent(new Event("mouseup", { bubbles: true }));
+        clickReactButton(rolesButton);
 
         const inputs = creditListItem.querySelectorAll("input");
 
@@ -215,7 +253,7 @@ rl.ready(() => {
         addButton.click();
       }
 
-      const artistsListItems = destinationTrackArtistsBaseElement.querySelectorAll(".editable_list .editable_items_list li");
+      const artistsListItems = destinationTrackArtistsBaseElement.querySelectorAll(discogsEditableListItemSelector);
 
       for (let i = 0; i < artists.length; i++) {
         const artist = artists[i];
@@ -248,7 +286,7 @@ rl.ready(() => {
 
     function getSourceArtists(sourceTrackElement) {
       const sourceTrackArtistsBaseElement = sourceTrackElement.querySelector(`.${discogsTrackArtistsClass}`);
-      const artistsListItems = sourceTrackArtistsBaseElement.querySelectorAll(".editable_list .editable_items_list li");
+      const artistsListItems = sourceTrackArtistsBaseElement.querySelectorAll(discogsEditableListItemSelector);
 
       if (artistsListItems.length === 0) {
         return [];
@@ -257,7 +295,7 @@ rl.ready(() => {
       let forcedEditing = false;
 
       if (!isTrackMetadataBeingEdited(sourceTrackArtistsBaseElement)) {
-        startEditingArtist(sourceTrackArtistsBaseElement)
+        startEditing(sourceTrackArtistsBaseElement)
         forcedEditing = true;
       }
 
@@ -298,7 +336,7 @@ rl.ready(() => {
       }
       
       if (forcedEditing) {
-        stopEditingArtist(sourceTrackArtistsBaseElement);
+        stopEditing(sourceTrackArtistsBaseElement);
       }
 
       return artists;
@@ -362,6 +400,12 @@ rl.ready(() => {
       destinationElement.dispatchEvent(new Event("input", { bubbles: true }));
       destinationElement.dispatchEvent(new Event("change", { bubbles: true }));
       destinationElement.dispatchEvent(new Event("blur", { bubbles: true }));
+    }
+
+    function clickReactButton(buttonToClick) {
+      buttonToClick.dispatchEvent(new Event("mousedown", { bubbles: true }));
+      buttonToClick.dispatchEvent(new Event("click", { bubbles: true }));
+      buttonToClick.dispatchEvent(new Event("mouseup", { bubbles: true }));
     }
 
     function startTrackListener() {
